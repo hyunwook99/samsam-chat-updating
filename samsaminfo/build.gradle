@@ -1,0 +1,90 @@
+plugins {
+	id 'java'
+	id 'war'
+	id 'org.springframework.boot' version '3.3.1'
+	id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'com.samsam'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	all{
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	}
+}
+
+eclipse {
+//Eclipse WTP(Web Tools Platform)를 설정한다.
+  wtp {
+//프로젝트의 특성(facets)을 설정한다.
+    facet {
+// 웹 프로젝트 특성을 jst.web 6.0으로 설정한다.
+    facet name: 'jst.web', version: '6.0'
+//자바 프로젝트 특성을 자바 17로 설정한다.
+    facet name: 'java', version: '17'
+    }
+  }
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+//Spring Boot 기본 Tomcat 서블릿 컨테이너를 제공된 라이브러리로 설정한다.
+	implementation 'org.springframework.boot:spring-boot-starter-tomcat'
+//Servlet API 의존성을 제공된 런타임으로 설정하며 서블릿 컨테이너가 제공하므로 별도로 패키징하지 않는다.
+	runtimeOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+//JSP API 의존성을 제공된 런타임으로 설정하며 서블릿 컨테이너가 제공하므로 별도로 패키징하지 않는다.
+	runtimeOnly 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.1.1'
+//JSP 표준 태그 라이브러리를 제공한다.
+	implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+//Glassfish 구현체를 사용하며 Glassfish 구현체는 Jakarta EE의 모든 주요 사양을 구현한다.
+	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
+//Jakarta 어노테이션 기능을 제공한다.
+	implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+//개발 환경에서 유용한 기능을 제공한다.
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+//Log4j2 로깅 기능을 제공한다.
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+// Oracle 데이터베이스와 연결하고 JDK11, JDK17, JDK19, JDK21를 지원한다.
+	implementation 'com.oracle.database.jdbc:ojdbc11:23.3.0.23.09'
+// 고성능 JDBC 커넥션 풀을 제공한다
+	implementation 'com.zaxxer:HikariCP:5.1.0'
+	// SQL 쿼리와 JDBC 작업을 로그로 기록한다.
+	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+	//JPA
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.hibernate:hibernate-core:6.1.5.Final'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile){
+	options.encoding = 'UTF-8'
+	options.compilerArgs << '-parameters'
+}
