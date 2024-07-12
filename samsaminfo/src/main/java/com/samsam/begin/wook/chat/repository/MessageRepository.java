@@ -14,5 +14,9 @@ public interface MessageRepository extends JpaRepository<MESSAGE, Long> {
 	 List<MESSAGE> findByChatRoomRoomId(Long roomId);
 	 List<MESSAGE> findByChatRoomRoomIdOrderByTimestampAsc(Long roomId);
 	 
+	 
+	 List<MESSAGE> findByChatRoomRoomIdAndWriterNot(Long roomId, String writer);
+	 int countByChatRoomRoomIdAndWriterNotAndReadFalse(Long roomId, String writer);
+	 
 
 }

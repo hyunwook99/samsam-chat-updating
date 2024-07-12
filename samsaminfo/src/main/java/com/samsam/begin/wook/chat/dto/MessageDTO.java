@@ -17,4 +17,5 @@ public class MessageDTO {
     private Long roomId;
     private String writer;
     private LocalDateTime timestamp;
+    private boolean read;
 }

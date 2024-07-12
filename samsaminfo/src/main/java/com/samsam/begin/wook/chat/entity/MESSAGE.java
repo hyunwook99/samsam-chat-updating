@@ -1,7 +1,9 @@
 package com.samsam.begin.wook.chat.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 public class MESSAGE {
@@ -28,19 +30,23 @@ public class MESSAGE {
     private String writer;  // 메시지 작성자
 
     @Column(name = "TIMESTAMP")
-    private LocalDateTime timestamp; // 메시지 시간
+    private LocalDateTime timestamp;
+
+    @Column(name = "READ")
+    private boolean read;  // 메시지 읽음 여부
 
     // Default constructor
     public MESSAGE() {}
 
     // Constructor
-    public MESSAGE(CHATROOM chatRoom, String sellerId, String buyerId, String msgContent , String writer, LocalDateTime timestamp) {
+    public MESSAGE(CHATROOM chatRoom, String sellerId, String buyerId, String msgContent , String writer, LocalDateTime timestamp, boolean read) {
         this.chatRoom = chatRoom;
         this.sellerId = sellerId;
         this.buyerId = buyerId;
         this.msgContent = msgContent;
         this.writer = writer;
         this.timestamp = timestamp;
+        this.read = read;
     }
 
     // Getters and Setters
@@ -98,5 +104,13 @@ public class MESSAGE {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 }

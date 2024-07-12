@@ -1,6 +1,8 @@
 package com.samsam.begin.wook.chat.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -57,15 +59,16 @@ public class MessageController {
     }
 
     @GetMapping("/enter/{roomId}")
-    public ResponseEntity<ChatRoomDTO> enterChatRoom(@PathVariable("roomId") Long roomId) {
+    public ResponseEntity<ChatRoomDTO> enterChatRoom(@PathVariable("roomId") Long roomId, @RequestParam("userId") String userId) {
         CHATROOM chatRoom = chatRoomService.getChatRoom(roomId);
         if (chatRoom != null) {
+            messagesService.markMessagesAsRead(roomId, userId);
             ChatRoomDTO chatRoomDTO = new ChatRoomDTO(
-                chatRoom.getRoomId(),
-                chatRoom.getSellerId(),
-                chatRoom.getBuyerId(),
-                chatRoom.getRoomTitle(),
-                chatRoom.getCreatedAt()
+                    chatRoom.getRoomId(),
+                    chatRoom.getSellerId(),
+                    chatRoom.getBuyerId(),
+                    chatRoom.getRoomTitle(),
+                    chatRoom.getCreatedAt()
             );
             return new ResponseEntity<>(chatRoomDTO, HttpStatus.OK);
         } else {
@@ -79,7 +82,7 @@ public class MessageController {
         messagesService.saveMessage(chatMessage);
 
         // 메시지를 특정 채널로 전송
-        template.convertAndSend(String.format("/sub/chat/%s", roomId), chatMessage);
+     
     }
 
     @GetMapping("/messages/{roomId}")
@@ -87,7 +90,7 @@ public class MessageController {
         List<MessageDTO> messages = messagesService.getMessagesByRoomId(roomId);
         return ResponseEntity.ok(messages);
     }
-    
+
     @GetMapping("/chat-rooms")
     public ResponseEntity<List<ChatRoomDTO>> getChatRoomsByUserId(@RequestParam("userId") String userId) {
         List<CHATROOM> chatRooms = chatRoomService.getChatRoomsByUserId(userId);
@@ -101,5 +104,22 @@ public class MessageController {
                 ))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(chatRoomDTOs);
+    }
+
+    @GetMapping("/messages/unread-count/{roomId}")
+    public ResponseEntity<Map<String, Integer>> getUnreadMessagesCount(@PathVariable("roomId") Long roomId, @RequestParam("userId") String userId) {
+        int unreadCount = messagesService.getUnreadMessagesCount(roomId, userId);
+        Map<String, Integer> response = new HashMap<>();
+        response.put("unreadCount", unreadCount);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/messages/read")
+    public ResponseEntity<Void> markMessagesAsRead(@RequestBody Map<String, Object> payload) {
+        Long roomId = Long.valueOf(payload.get("roomId").toString());
+        String userId = (String) payload.get("userId");
+
+        messagesService.markMessagesAsRead(roomId, userId);
+        return ResponseEntity.ok().build();
     }
 }
